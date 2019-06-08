@@ -7,13 +7,28 @@ const keywords = [];
 // on page load
 function startApp(){
   showPage(1);
-  displayKeywords();
-  addEventListeners();
+
 }
+
+function showPage(pageNum){
+
+  const success = horns => displayHorns(horns);
+
+  const failure = error => console.error(error);
+
+  $.get(`data/page-${pageNum}.json`, 'json')
+    .then(success)
+    .catch(failure);
+}
+
 
 
 // populate the horns on the page
 function displayHorns(horns){
+
+  // Clearing any old content before loading the new content with a .not() and .remove()
+
+  $('section').not('#photo-template').remove();
   //method on the array
   horns.forEach(horn => {
     //assign clone to id
@@ -30,6 +45,7 @@ function displayHorns(horns){
     $('main').append($newHorn);
 
   });
+  displayKeywords(horns);
 }
 
 
@@ -46,32 +62,35 @@ function displayKeywords(horns) {
   keywords.forEach(keyword => {
     const $newKeyword = $('#keyword-template').clone();
     $newKeyword.text(keyword);
+    $newKeyword.val(keyword);
     $newKeyword.removeAttr('#keyword-template');
     $('select').append($newKeyword)
 
 
-  })
+  });
+  hideOrShow();
 
 }
 
 // select event listener
-function addEventListeners(){
-  $('div li').on('change', event => {
-    const pageNum = $(event.target).data('page')
+function pageListeners(){
+  $('div li').on('click', event => {
+    const pageNum = $(event.target).data('page');
+    showPage(pageNum);
+    console.log('you clicked', pageNum);
   });
 }
 
 
+
 function hideOrShow(){
-  var input = 'markhor';
+  $('select').on('change', event => {
+    const $selector = $(event.target);
+    const type = $selector.val();
+    $('section').hide();
+    $(`.${type}`).show();
 
-$('#photo-template').hide();
-$(`.${input}`).show();
+    console.log(type);
 
-
-  }
-
-  //  $('.rhino').hide();
-  //  $('.unicorn').hide();
-  // $(toHide).show();
+  })
 }
