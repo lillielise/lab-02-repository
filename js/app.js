@@ -2,30 +2,15 @@
 
 // start up everything
 $(startApp)
+const keywords = [];
 
 // on page load
 function startApp(){
-  loadData();
+  showPage(1);
+  displayKeywords();
+  addEventListeners();
 }
 
-// load the horm data from json file
-function loadData(){
-
-  const success = horns => {
-    displayHorns(horns);
-    displayKeywords(horns);
-
-  }
-
-  $.get('data/page-1.json', 'json').then(success);
-
-
-  console.log('you got the data!!')
-
-  //call the horn display function
-
-
-}
 
 // populate the horns on the page
 function displayHorns(horns){
@@ -38,6 +23,7 @@ function displayHorns(horns){
     $newHorn.find('img').attr('src', horn.image_url);
     $newHorn.find('img').attr('alt', horn.description);
     $newHorn.find('img').attr('title', horn.title)
+    $newHorn.attr('class', horn.keyword);
     $newHorn.find('p').text(`Horns: ${horn.horns}`);
     //remove attribute
     $newHorn.removeAttr('#photo-template');
@@ -50,7 +36,7 @@ function displayHorns(horns){
 // populate the keywords
 
 function displayKeywords(horns) {
-  const keywords = [];
+
   horns.forEach(horn => {
     if (!keywords.includes(horn.keyword)){
       keywords.push(horn.keyword)
@@ -62,10 +48,30 @@ function displayKeywords(horns) {
     $newKeyword.text(keyword);
     $newKeyword.removeAttr('#keyword-template');
     $('select').append($newKeyword)
-    console.log('this is the keyword', keywords)
+
+
   })
 
 }
 
 // select event listener
+function addEventListeners(){
+  $('div li').on('change', event => {
+    const pageNum = $(event.target).data('page')
+  });
+}
 
+
+function hideOrShow(){
+  var input = 'markhor';
+
+$('#photo-template').hide();
+$(`.${input}`).show();
+
+
+  }
+
+  //  $('.rhino').hide();
+  //  $('.unicorn').hide();
+  // $(toHide).show();
+}
