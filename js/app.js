@@ -4,9 +4,7 @@
 // start up everything
 $(startApp);
 
-// global variables
-const keywords = []
-let template;
+
 
 
 // on page load
@@ -32,9 +30,11 @@ function showPage(pageNum){
 //function to display page
 function displayPage(horns) {
   displaySelectedKeyword(horns);
-  template = Handlebars.compile($('#horn-template').html());
-  const render = template({ horns: horns });
-  $('#dataSection').html(render);
+
+  const template = Handlebars.compile($('#horn-template').html());
+  // for each horn pass in horns to the template
+  const render = template({ horn: horns });
+  $('#data-section').html(render);
 
   pageClickListeners();
 }
@@ -49,23 +49,25 @@ function pageClickListeners(){
 
 
 function displaySelectedKeyword(horns) {
+  const keywords = []
   horns.forEach(horn => {
     if (!keywords.includes(horn.keyword)) {
       keywords.push(horn.keyword)
     }
-
   })
 
-  keywords.forEach((element) => {
-    const $newKeyword = $('#key-word').clone();
-    $newKeyword.text(element);
-    $newKeyword.val(element);
-    $newKeyword.removeAttr('#key-word');
-    $('select').append($newKeyword);
+  const keywordElements = [];
 
+  const render = Handlebars.compile($('#keyword-template').html());
+  keywords.forEach(keywordVal => {
+    console.log(render({keyword: keywordVal}))
+    console.log({keyword: keywordVal})
+    keywordElements.push(render({keyword: keywordVal}));
   })
-
-
+  
+  console.log('should be displaying keywords')
+  $('.new-keywords').remove();
+  $('#keyword-section').append(keywordElements);
 }
 
 function attachSelectListeners() {
