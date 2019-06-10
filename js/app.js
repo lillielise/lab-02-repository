@@ -6,7 +6,7 @@ $(startApp);
 
 // global variables
 const keywords = []
-let template;
+
 
 
 // on page load
@@ -32,9 +32,11 @@ function showPage(pageNum){
 //function to display page
 function displayPage(horns) {
   displaySelectedKeyword(horns);
-  template = Handlebars.compile($('#horn-template').html());
-  const render = template({ horns: horns });
-  $('#dataSection').html(render);
+
+  const template = Handlebars.compile($('#horn-template').html());
+  // for each horn pass in horns to the template
+  const render = template({ horn: horns });
+  $('#data-section').html(render);
 
   pageClickListeners();
 }
@@ -53,17 +55,11 @@ function displaySelectedKeyword(horns) {
     if (!keywords.includes(horn.keyword)) {
       keywords.push(horn.keyword)
     }
-
   })
-
-  keywords.forEach((element) => {
-    const $newKeyword = $('#key-word').clone();
-    $newKeyword.text(element);
-    $newKeyword.val(element);
-    $newKeyword.removeAttr('#key-word');
-    $('select').append($newKeyword);
-
-  })
+  const template = Handlebars.compile($('#keyword-template').html());
+  // for each horn pass in horns to the template
+  const render = template({keywords: keywords });
+  $('#keyword-section').html(render);
 
 
 }
