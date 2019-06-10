@@ -24,9 +24,7 @@
     </script>
 
     <script id="keyword-template" type="text/x-handlebars-template">
-      {{#each keywords}}
-      <option id={{keyword}} value={{keyword}}>{{keyword}}</option>
-      {{/each}}
+      <option class="new-keywords" value={{keyword}}>{{keyword}}</option>
     </script>
 
   </head>
@@ -38,12 +36,16 @@
         <li data-page="2">Page 2</li>
       </div> 
       </nav>
+
       <select id="keyword-section">
         <option value="default">Filter by Keyword</option>
       </select>
+      
     </header>
     <!-- Div for handlebar template -->
-    <div id="data-section"></div>
+    <div id="data-section">
+      
+    </div>
     <footer>
       &copy; 2018 Code Fellows
     </footer>
