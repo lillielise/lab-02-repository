@@ -1,83 +1,106 @@
-'use strict'
+'use strict';
 
-
-// start up everything
-$(startApp);
-
-
-
-
-// on page load
-function startApp() {
-  // start by showing page 1
-  showPage(1);
-  attachSelectListeners();
+function Image(item) {
+  this.image_url = item.image_url;
+  this.title = item.title;
+  this.description = item.description;
+  this.keyword = item.keyword;
+  this.horns = item.horns;
 }
 
-// show page and get data from correct json file
-function showPage(pageNum){
+let allImages = [];
 
-  const success = horns => displayPage(horns);
+Image.prototype.render = function () {
+  let template = Handlebars.compile($('#photo-template').html());
+  return template(this);
+};
 
-  const failure = error => console.error(error);
+const readJson = (pageNum) => {
 
-  $.get(`data/page-${pageNum}.json`, 'json')
-    .then(success)
-    .catch(failure);
-}
+  $('main').empty();
+  allImages = [];
 
+  $.ajax(`../data/page-${pageNum}.json`, {mehod: 'GET', dataType: 'JSON'})
+    .then(data => {
+      data.forEach(item => {
+        allImages.push(new Image(item));
+      });
 
-//function to display page
-function displayPage(horns) {
-  displaySelectedKeyword(horns);
+      allImages.forEach(image => {
+        $('main').append(image.render());
+      });
 
-  const template = Handlebars.compile($('#horn-template').html());
-  // for each horn pass in horns to the template
-  const render = template({ horn: horns });
-  $('#data-section').html(render);
+    })
+    .then(populateFilter)
+    .then(handleFilter);
+};
 
-  pageClickListeners();
-}
+const populateFilter = () => {
+  let filterKeywords = [];
 
-// page number click listener
-function pageClickListeners(){
-  $('div li').on('click', event => {
-    const pageNum = $(event.target).data('page');
-    showPage(pageNum);
+  $('option').not(':first').remove();
+
+  allImages.forEach(image => {
+    if (!filterKeywords.includes(image.keyword)) filterKeywords.push(image.keyword);
+  });
+
+  filterKeywords.sort();
+
+  filterKeywords.forEach(keyword => {
+    let optionTag = `<option value="${keyword}">${keyword}</option>`;
+    $('select').append(optionTag);
+  });
+};
+
+const handleFilter = () => {
+  $('select').on('change', function() {
+    const type = $( "select option:checked" ).val();
+    console.log(type);
+    if (type === 'default') {
+      $('div').show();
+    } else {
+      $('div').hide();
+      $(`.${type}`).show();
+    }
   });
 }
 
-
-function displaySelectedKeyword(horns) {
-  const keywords = []
-  horns.forEach(horn => {
-    if (!keywords.includes(horn.keyword)) {
-      keywords.push(horn.keyword)
+const pageListeners = function() {
+  $('li').on('click', event => {
+    const pageNum = $(event.target).val();
+    if(parseInt(pageNum) === 1) {
+      readJson(1)
+    } else {
+      readJson(2);
     }
   })
+}
 
-  const keywordElements = [];
+const sortListener = function() {
+  $('input').on('change', function() {
+    const inputValue = $(this).attr('id');
+    handleSort(allImages, inputValue);
 
-  const render = Handlebars.compile($('#keyword-template').html());
-  keywords.forEach(keywordVal => {
-    console.log(render({keyword: keywordVal}))
-    console.log({keyword: keywordVal})
-    keywordElements.push(render({keyword: keywordVal}));
+    $('main').empty();
+
+    allImages.forEach(image => {
+      $('main').append(image.render());
+    });
   })
-  
-  console.log('should be displaying keywords')
-  $('.new-keywords').remove();
-  $('#keyword-section').append(keywordElements);
 }
 
-function attachSelectListeners() {
-  $('select').on('change', event => {
-    const $selector = $(event.target);
-    const type = $selector.val();
-    $('section').hide();
-    $(`.${type}`).show();
-
-    console.log(type);
-
-  });
+const handleSort = function(array, property) {
+  array.sort((a, b) => {
+    let firstComparison = a[property];
+    let secondComparison = b[property];
+    return (firstComparison > secondComparison) ? 1 : (firstComparison < secondComparison) ? -1 : 0;
+  })
 }
+
+const loadPage = function() {
+  readJson(1);
+  pageListeners();
+  sortListener();
+}
+
+$(() => loadPage());

@@ -1,23 +1,12 @@
-main {
-  display: flex;
-  flex-wrap: wrap;
-  width: 75%;
-  text-align: center;
-  justify-content: space-around;
-  margin: 0 auto;
+
+@media (min-width:481px) and (max-width:959px) {
+  body {
+    width:768px;
+  }
 }
 
-section {
-  margin: 1%;
-}
-
-img {
-  max-width: 100%;
-  width: 200px;
-  /* margin: 10px; */
-}
-
-h3 {
-  width: 200px;
-
+@media (min-width:960px) {
+  body {
+    width:960px;
+  }
 }
